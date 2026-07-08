@@ -1,5 +1,9 @@
 from flask import Flask, request, jsonify
 from db import signup, login  # importing your working functions from last night
+from report_analyzer import extract_text_from_pdf
+from biomarker_extractor import extract_biomarkers
+from risk_scoring import calculate_risk
+
 
 app = Flask(__name__)
 
@@ -34,3 +38,13 @@ def login_route():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
+    def analyze_report():
+        pdf_path = "sample_report.pdf"
+        text = extract_text_from_pdf(pdf_path)
+        biomarkers = extract_biomarkers(text)
+        risk = calculate_risk(biomarkers)
+        return jsonify({
+            "extracted_text": text,
+            "biomarkers": biomarkers,
+            "risk_level": risk
+        })
