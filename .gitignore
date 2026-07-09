@@ -1,0 +1,21 @@
+__pycache__/
+*.pyc
+
+# Database
+*.db
+
+# Uploaded files
+uploads/
+
+# Postman
+.postman/
+postman/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Virtual environments
+venv/
+.venv/
+env/
