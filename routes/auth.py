@@ -14,6 +14,7 @@ def signup_route():
         data.get("name"),
         data.get("age"),
         data.get("weight"),
+        data.get("height"),
         data.get("diabetes_status")
     )
 

@@ -5,6 +5,8 @@ from models.patient_data import patient_data
 from calculators.fib4 import calculate_fib4
 from calculators.apri import calculate_apri
 
+from db import add_report
+
 calculate_bp = Blueprint("calculate", __name__)
 
 
@@ -18,12 +20,13 @@ def calculate():
         user_id = int(data["user_id"])
 
         age = float(data["age"])
-        ast_uln = float(data["ast_uln"])
+        ast_uln = float(patient_data["ast_uln"])
 
         required_fields = [
             "ast",
             "alt",
-            "platelets"
+            "platelets",
+            "ast_uln"
         ]
 
         missing_fields = [
@@ -55,6 +58,30 @@ def calculate():
         patient_data["fib4"] = round(fib4_score, 2)
         patient_data["apri"] = round(apri_score, 2)
 
+        report_id = add_report(
+            user_id=user_id,
+            age=age,
+            platelets=patient_data.get("platelets"),
+            ast=patient_data.get("ast"),
+            alt=patient_data.get("alt"),
+            bilirubin=patient_data.get("total_bilirubin"),
+            albumin=patient_data.get("albumin"),
+            inr=patient_data.get("inr"),
+            pt=patient_data.get("pt"),
+            afp=patient_data.get("afp"),
+            hbsag=patient_data.get("hbsag"),
+            anti_hcv=patient_data.get("anti_hcv"),
+            ast_uln=ast_uln,
+            apri=round(apri_score, 2),
+            fib4=round(fib4_score, 2)
+        )
+
+        if report_id is None:
+            return jsonify({
+                "success": False,
+                "error": "Failed to save report"
+            }), 500
+
         report_data = {
             "user_id": user_id,
             "age": age,
@@ -75,16 +102,12 @@ def calculate():
 
         return jsonify({
             "success": True,
-            "report_data": report_data
-        })
-
-        return jsonify({
-            "success": True,
+            "report_id": report_id,
             "fib4": round(fib4_score, 2),
             "apri": round(apri_score, 2),
-            "patient_data": patient_data
+            "report_data": report_data
         })
-
+    
     except Exception as e:
 
         return jsonify({
