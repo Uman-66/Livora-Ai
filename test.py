@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
+from db import add_report
 
 IMG_SIZE = 224
 MODEL_PATH = "best_model.h5"        # update path if needed
@@ -29,7 +30,7 @@ def _center_crop_resize(img, target_size=IMG_SIZE):
     return resized
 
 
-def predict_liver_condition(image_input, model_path=MODEL_PATH):
+def predict_liver_condition(image_input, model_path=MODEL_PATH, user_id=1):
     """
     Takes either:
       - a file path (str) to an uploaded image, OR
@@ -57,5 +58,8 @@ def predict_liver_condition(image_input, model_path=MODEL_PATH):
     preds = model.predict(img_array, verbose=0)[0]
     pred_idx = int(np.argmax(preds))
     pred_class = CLASS_NAMES[pred_idx]
+
+    # Store only the model prediction in liv_perfor; other report fields default to None.
+    add_report(user_id=user_id, liv_perfor=pred_class)
 
     return pred_class

@@ -35,7 +35,7 @@ def get_liver_analysis(user_id):
 
     payload = {
         "model": MODEL,
-        "max_tokens": 1024,
+        "max_tokens": 2048,
         "temperature": 0.3,
         "messages": [
             {"role": "system", "content": "You are a medical analysis assistant. Provide responses in valid JSON format only."},
