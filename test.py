@@ -36,7 +36,7 @@ def predict_liver_condition(image_input, model_path=MODEL_PATH):
       - a numpy array (already-read image, e.g. from cv2.imread or an uploaded file buffer)
 
     Returns:
-      (predicted_class: str, confidence_percent: float)
+      predicted_class: str
     """
     model = _load_model(model_path)
 
@@ -57,7 +57,5 @@ def predict_liver_condition(image_input, model_path=MODEL_PATH):
     preds = model.predict(img_array, verbose=0)[0]
     pred_idx = int(np.argmax(preds))
     pred_class = CLASS_NAMES[pred_idx]
-    confidence = round(float(preds[pred_idx]) * 100, 2)
 
-    return pred_class, confidence
-
+    return pred_class
