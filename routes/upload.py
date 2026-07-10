@@ -8,7 +8,7 @@ from parsers.lft_parser import parse_lft
 from parsers.cbc_parser import parse_cbc
 from parsers.coagulation_parser import parse_coagulation
 from parsers.afp_parser import parse_afp
-#from parsers.hepatitis_parser import parse_hepatitis
+from parsers.hepatitis_parser import parse_hepatitis
 
 from models.patient_data import patient_data
 
@@ -70,8 +70,8 @@ def upload_file():
         elif report_type.lower() == "afp":
             results = parse_afp(text)
 
-        #elif report_type.lower() == "hepatitis":
-        #   results = parse_hepatitis(text)
+        elif report_type.lower() == "hepatitis":
+           results = parse_hepatitis(text)
 
         else:
             return jsonify({
