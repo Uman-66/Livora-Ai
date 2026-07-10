@@ -1,1 +1,7 @@
 .env
+/__pycache__
+*.pyc
+/data_split
+/data
+/data_normalized
+/plots
