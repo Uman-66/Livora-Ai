@@ -229,8 +229,8 @@ Liver Health Score = (Biomarker Score x 35%) + (Fibrosis Score x 25%) + (Ultraso
 Scoring components:
 - Liver Function (35%): ALT, AST, AST/ALT ratio, bilirubin, albumin, INR/PT
 - Fibrosis Risk (25%): platelet count, FIB-4 score, APRI score, HBsAg, Anti-HCV
-- Ultrasound Assessment (20%): normal liver, benign lesion, malignant/suspicious lesion, AFP
-- Comorbidities (10%): diabetes, hypertension, previous liver disease, family history
+- Ultrasound Assessment (20%): normal liver,HCC, hemangioma, or other findings
+- Comorbidities (10%): diabetes, or other relevant conditions
 - Metabolic Health (10%): BMI, age, gender
 
 Interpret higher-risk findings as lowering the score and improving values as raising the score. When a component is missing, estimate conservatively and note insufficient data in the explanation.
