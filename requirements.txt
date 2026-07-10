@@ -6,4 +6,4 @@ pdf2image
 opencv-python>=5.0.0.93
 numpy>=2.4.6
 tensorflow>=2.21.0
-gunicorn
+gunicorn>=23.0.0
