@@ -224,14 +224,14 @@ def build_full_llm_request(user_id):
     instructions = """
 Use the following liver health scoring criteria when interpreting the patient's data:
 
-Liver Health Score = (Biomarker Score x 35%) + (Fibrosis Score x 25%) + (Ultrasound Score x 20%) + (Comorbidity Score x 10%) + (Metabolic Score x 10%)
+Liver Health Score = (Biomarker Score x 35%) + (Fibrosis Score x 25%) + (Ultrasound Score x 25%) + (Comorbidity Score x 3%) + (Metabolic Score x 12%)
 
 Scoring components:
 - Liver Function (35%): ALT, AST, AST/ALT ratio, bilirubin, albumin, INR/PT
 - Fibrosis Risk (25%): platelet count, FIB-4 score, APRI score, HBsAg, Anti-HCV
-- Ultrasound Assessment (20%): normal liver,HCC, hemangioma, or other findings
-- Comorbidities (10%): diabetes, or other relevant conditions
-- Metabolic Health (10%): BMI, age, gender
+- Ultrasound Assessment (25%): normal liver,HCC, hemangioma, or other findings
+- Comorbidities (3%): diabetes, or other relevant conditions
+- Metabolic Health (12%): BMI, age, gender
 
 Interpret higher-risk findings as lowering the score and improving values as raising the score. When a component is missing, estimate conservatively and note insufficient data in the explanation.
 
