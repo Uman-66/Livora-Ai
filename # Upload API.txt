@@ -1,0 +1,53 @@
+# Upload API
+
+### Endpoint
+
+POST/Upload
+
+### Request Fields
+
+| Field | Type | Description |
+
+file | File | Report PDF/Image
+report_type | string | report type|
+
+#Supported report type values
+
+lft
+cbc
+coagulation
+afp
+hepatitis
+ultrasound
+
+### Response
+
+Success (Medical Reports):
+
+```json
+{
+    "success": true,
+    "report_type": "string",
+    "extracted_data": {},
+    "patient_data": {}
+}
+```
+
+Success (Ultrasound):
+
+```json
+{
+    "success": true,
+    "report_type": "ultrasound",
+    "prediction": "string"
+}
+```
+
+Error:
+
+```json
+{
+    "success": false,
+    "error": "string"
+}
+```

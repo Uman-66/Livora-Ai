@@ -1,0 +1,44 @@
+# Authentication API
+
+## 1. Signup
+
+### Endpoint
+
+POST/signup
+
+### Request Fields
+
+ email - string 
+ password - string 
+ name - string 
+ age - integer 
+ weight - float 
+ height - float 
+ diabetes_status - string 
+
+### Response
+
+```json
+{
+    "user_id": "integer"
+}
+
+## 2. Login
+
+### Endpoint
+
+POST /login
+
+### Request Fields
+
+email - string
+password - string
+
+### Response
+
+```json
+{
+    "user_id": "integer"
+}
+
+

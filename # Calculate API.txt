@@ -1,0 +1,33 @@
+# Calculate API
+
+## Endpoint
+
+POST /calculate
+
+### Request Fields
+
+| Field | Type |
+| user_id | integer |
+| age | float |
+
+### Response
+
+Success:
+
+```json
+{
+    "success": true,
+    "report_id": "integer",
+    "fib4": "float",
+    "apri": "float",
+    "report_data": {}
+}
+```
+
+### Notes
+
+- Call this endpoint only after all required reports have been uploaded.
+- The endpoint calculates:
+  - FIB-4 Score
+  - APRI Score
+- The endpoint also saves the consolidated report data to the database.
