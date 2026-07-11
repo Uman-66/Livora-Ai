@@ -100,53 +100,121 @@ def build_llm_prompt(user_id):
     return prompt
 
 
-def build_full_llm_request(user_id):
+def build_report_analysis_request(user_id):
     base_prompt = build_llm_prompt(user_id)
     if base_prompt is None:
         return None
 
     instructions = """
-Use the following liver health scoring criteria when interpreting the patient's data:
+Analyze ONLY the most recent report values while using older reports as historical context.
 
-Liver Health Score = (Biomarker Score x 35%) + (Fibrosis Score x 25%) + (Ultrasound Score x 25%) + (Comorbidity Score x 3%) + (Metabolic Score x 12%)
+When determining overall health score and risk level, consider:
 
-Scoring components:
-- Liver Function (35%): ALT, AST, AST/ALT ratio, bilirubin, albumin, INR/PT
-- Fibrosis Risk (25%): platelet count, FIB-4 score, APRI score, HBsAg, Anti-HCV
-- Ultrasound Assessment (20%): Normal liver, HCC, Hemangioma
-- Comorbidities (10%): diabetes, hypertension, previous liver disease, family history
-- Metabolic Health (10%): BMI, age
+- Current biomarkers
+- Biomarker trends over time
+- BMI
+- Age
+- Gender
+- Diabetes
+- Hypertension
+- Previous liver disease
+- Family history
+- Activity level
+- Exercise frequency
+- Alcohol consumption
+- Smoking status
 
-Interpret higher-risk findings as lowering the score and improving values as raising the score. When a component is missing, estimate conservatively and note insufficient data in the explanation.
+Heavy alcohol use, smoking, obesity, diabetes,
+hypertension, previous liver disease and abnormal
+ultrasound findings should increase risk level.
 
-Respond with ONLY a raw JSON object. Do not include markdown code fences, explanations, or any text before or after the JSON. Your entire response must be valid, directly parseable JSON in exactly this structure:
+Determine:
+
+1. Overall liver health score (0-100)
+2. Risk level:
+   - Low
+   - Moderate
+   - High
+   - Critical
+
+3. Biomarker status for:
+   AST
+   ALT
+   Bilirubin
+   Albumin
+   Platelets
+   INR
+   AFP
+
+For each biomarker provide:
+- value
+- status
+
+Status examples:
+- Normal
+- Mildly Elevated
+- Elevated
+- Severely Elevated
+- Low
+- Severely Low
+- N/A
+
+Also generate a patient-friendly explanation for every available biomarker.
+
+Respond ONLY as valid JSON.
 
 {
-  "overall_health_score": <integer 0-100>,
-  "flags": {
+  "overall_health_score": <integer>,
+  "risk_level": "<Low/Moderate/High/Critical>",
+
+  "biomarker_status": {
     "ast": {
-      "status": "<Normal/High/N/A>",
-      "value": "<latest AST value>"
+      "value": "<value>",
+      "status": "<status>"
     },
     "alt": {
-      "status": "<Normal/High/N/A>",
-      "value": "<latest ALT value>"
+      "value": "<value>",
+      "status": "<status>"
     },
     "bilirubin": {
-      "status": "<Normal/High/N/A>",
-      "value": "<latest bilirubin value>"
+      "value": "<value>",
+      "status": "<status>"
     },
     "albumin": {
-      "status": "<Normal/Low/N/A>",
-      "value": "<latest albumin value>"
+      "value": "<value>",
+      "status": "<status>"
+    },
+    "platelets": {
+      "value": "<value>",
+      "status": "<status>"
+    },
+    "inr": {
+      "value": "<value>",
+      "status": "<status>"
+    },
+    "afp": {
+      "value": "<value>",
+      "status": "<status>"
+    },
+    "apri": {
+    "value": "<value>",
+    "status": "<status>"
+    },
+    "fib4": {
+    "value": "<value>",
+    "status": "<status>"
     }
   },
-  "apri_fib4_interpretation": "<one sentence interpreting the most recent APRI and FIB-4 values if available, otherwise state insufficient data>",
-  "ai_insights": [
-    "<sentence about the most notable current value>",
-    "<sentence comparing to previous record if history exists, otherwise note this is baseline>",
-    "<additional relevant insight sentence>"
-  ]
+
+  "biomarker_insights": [
+    {
+      "biomarker": "<name>",
+      "value": "<value>",
+      "insight": "<patient-friendly explanation>"
+    }
+  ],
+
+  "ai_summary": "<3-5 sentence summary>"
 }
 """
     return base_prompt + instructions

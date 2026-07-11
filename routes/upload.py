@@ -13,6 +13,9 @@ from services.ultrasound_model import predict_liver_condition
 
 from models.patient_data import patient_data
 
+from db import add_uploaded_report
+from db import get_recent_reports
+
 upload_bp = Blueprint("upload", __name__)
 
 UPLOAD_FOLDER = "uploads"
@@ -43,6 +46,14 @@ def upload_file():
                 "error": "report_type is required"
             }), 400
 
+        user_id = int(request.form.get("user_id"))
+
+        if not user_id:
+            return jsonify({
+                "success": False,
+                "error": "user_id is required"
+            }), 400
+
         # Save PDF
         filename = secure_filename(file.filename)
 
@@ -59,12 +70,17 @@ def upload_file():
 
             patient_data["ultrasound_prediction"] = result
 
+            add_uploaded_report(
+                user_id=user_id,
+                report_type=report_type
+            )
+
             return jsonify({
                 "success": True,
                 "report_type": report_type,
                 "prediction": result
             })
-
+        
         # Extract text
         text = extract_text(filepath)
 
@@ -95,6 +111,11 @@ def upload_file():
         # Update patient data
         patient_data.update(results)
 
+        add_uploaded_report(
+            user_id=user_id,
+            report_type=report_type
+        )
+
         return jsonify({
             "success": True,
             "report_type": report_type,
@@ -108,3 +129,13 @@ def upload_file():
             "success": False,
             "error": str(e)
         }), 500
+    
+@upload_bp.route("/recent-reports/<int:user_id>", methods=["GET"])
+def recent_reports(user_id):
+
+    reports = get_recent_reports(user_id)
+
+    return jsonify({
+        "success": True,
+        "recent_reports": reports
+    })

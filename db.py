@@ -18,10 +18,21 @@ def init_db():
             password TEXT NOT NULL,
             name TEXT,
             age INTEGER,
+            gender TEXT,
             weight REAL,
             height REAL,
             bmi REAL,
-            diabetes_status TEXT
+                     
+            diabetes_status INTEGER DEFAULT 0,
+            hypertension INTEGER DEFAULT 0,
+            previous_liver_disease INTEGER DEFAULT 0,
+            family_history INTEGER DEFAULT 0,
+                     
+
+            activity_level TEXT,
+            exercise_frequency TEXT,
+            alcohol_consumption TEXT,
+            smoking_status TEXT
         )
         """)
 
@@ -60,6 +71,60 @@ def init_reports_table():
         )
         """)
 
+def init_upload_history_table():
+    with get_connection() as conn:
+        conn.execute("""
+        CREATE TABLE IF NOT EXISTS upload_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            report_type TEXT NOT NULL,
+            date_uploaded TEXT NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        )
+        """)
+
+def add_uploaded_report(user_id, report_type):
+
+    date_uploaded = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    with get_connection() as conn:
+        conn.execute(
+            """
+            INSERT INTO upload_history
+            (user_id, report_type, date_uploaded)
+            VALUES (?, ?, ?)
+            """,
+            (user_id, report_type, date_uploaded)
+        )
+
+def get_recent_reports(user_id, limit=3):
+
+    conn = get_connection()
+
+    try:
+        cursor = conn.execute(
+            """
+            SELECT report_type, date_uploaded
+            FROM upload_history
+            WHERE user_id = ?
+            ORDER BY date_uploaded DESC
+            LIMIT ?
+            """,
+            (user_id, limit)
+        )
+
+        rows = cursor.fetchall()
+
+        return [
+            {
+                "report_type": row[0],
+                "date_uploaded": row[1]
+            }
+            for row in rows
+        ]
+
+    finally:
+        conn.close()
 
 def _safe_float(value):
     """Converts extractor output to float, or None if missing/invalid."""
@@ -84,6 +149,17 @@ def _safe_str(value):
     if value is None or value == "":
         return None
     return str(value).strip()
+
+def normalize(value):
+    if value is None:
+        return None
+    return str(value).strip().lower()
+
+def _safe_bool(value):
+    return 1 if str(value).lower() in ["true", "1", "yes"] else 0
+
+def validate_choice(value, allowed):
+    return value if value in allowed else None
 
 # Insert a new report into the reports table, handling missing or invalid values gracefully.
 def add_report(user_id, age=None, platelets=None, ast=None, alt=None,
@@ -129,15 +205,66 @@ def add_report(user_id, age=None, platelets=None, ast=None, alt=None,
         conn.close()
 
 # Signup function to create a new user in the users table, calculating BMI and handling potential integrity errors.
-def signup(email, password, name, age, weight, height, diabetes_status):
+def signup(email, password, name, age, gender, weight, height, diabetes_status, hypertension, previous_liver_disease, family_history, activity_level, exercise_frequency, alcohol_consumption, smoking_status):
     bmi = calculate_bmi(weight, height)
+
+    diabetes_status = _safe_bool(diabetes_status)
+    hypertension = _safe_bool(hypertension)
+    previous_liver_disease = _safe_bool(previous_liver_disease)
+    family_history = _safe_bool(family_history)
+
+    activity_level = normalize(activity_level)
+    exercise_frequency = normalize(exercise_frequency)
+    alcohol_consumption = normalize(alcohol_consumption)
+    smoking_status = normalize(smoking_status)
+
+    activity_level = validate_choice(
+        activity_level,
+        [
+            "sedentary",
+            "lightly active",
+            "moderately active",
+            "very active"
+        ]
+    )
+
+    exercise_frequency = validate_choice(
+        exercise_frequency,
+        [
+            "never",
+            "1-2 times per week",
+            "2-4 times per week",
+            "5+ times every week",
+            "every day"
+        ]
+    )
+
+    alcohol_consumption = validate_choice(
+        alcohol_consumption,
+        [
+            "none",
+            "occasional",
+            "moderate",
+            "heavy"
+        ]
+    )
+
+    smoking_status = validate_choice(
+        smoking_status,
+        [
+            "never",
+            "former",
+            "current"
+        ]
+    )
+
     try:
         with get_connection() as conn:
             cursor = conn.execute(
                 """INSERT INTO users
-                   (email, password, name, age, weight, height, bmi, diabetes_status)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
-                (email, password, name, age, weight, height, bmi, diabetes_status),
+                   (email, password, name, age, gender, weight, height, bmi, diabetes_status, hypertension, previous_liver_disease, family_history, activity_level, exercise_frequency, alcohol_consumption, smoking_status)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (email, password, name, age, gender, weight, height, bmi, diabetes_status, hypertension, previous_liver_disease, family_history, activity_level, exercise_frequency, alcohol_consumption, smoking_status),
             )
             return cursor.lastrowid
     except sqlite3.IntegrityError:
@@ -163,6 +290,81 @@ def login(email, password):
         return user_id
     return None
 
+def update_user_profile(
+    user_id,
+    age,
+    gender,
+    weight,
+    height,
+    diabetes_status,
+    hypertension,
+    previous_liver_disease,
+    family_history,
+    activity_level,
+    exercise_frequency,
+    alcohol_consumption,
+    smoking_status
+):
+
+    bmi = calculate_bmi(weight, height)
+
+    diabetes_status = _safe_bool(diabetes_status)
+    hypertension = _safe_bool(hypertension)
+    previous_liver_disease = _safe_bool(previous_liver_disease)
+    family_history = _safe_bool(family_history)
+
+    activity_level = normalize(activity_level)
+    exercise_frequency = normalize(exercise_frequency)
+    alcohol_consumption = normalize(alcohol_consumption)
+    smoking_status = normalize(smoking_status)
+
+
+    try:
+        with get_connection() as conn:
+
+            conn.execute(
+                """
+                UPDATE users
+                SET
+                    age=?,
+                    gender=?,
+                    weight=?,
+                    height=?,
+                    bmi=?,
+                    diabetes_status=?,
+                    hypertension=?,
+                    previous_liver_disease=?,
+                    family_history=?,
+                    activity_level=?,
+                    exercise_frequency=?,
+                    alcohol_consumption=?,
+                    smoking_status=?
+                WHERE id=?
+                """,
+                (
+                    age,
+                    gender,
+                    weight,
+                    height,
+                    bmi,
+                    diabetes_status,
+                    hypertension,
+                    previous_liver_disease,
+                    family_history,
+                    activity_level,
+                    exercise_frequency,
+                    alcohol_consumption,
+                    smoking_status,
+                    user_id
+                )
+            )
+
+            return True
+
+    except sqlite3.Error as e:
+        print("Profile update error:", e)
+        return False
 
 init_db()
 init_reports_table()
+init_upload_history_table()
