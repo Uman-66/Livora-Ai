@@ -3,8 +3,8 @@ from db import get_connection
 def build_llm_prompt(user_id):
     conn = get_connection()
     try:
-        with conn:
-            user_row = conn.execute(
+        with conn.cursor() as cur:
+            cur.execute(
                 """
                 SELECT
                     name,
@@ -22,17 +22,19 @@ def build_llm_prompt(user_id):
                     alcohol_consumption,
                     smoking_status
                 FROM users
-                WHERE id=?
+                WHERE id=%s
                 """,
                 (user_id,)
-            ).fetchone()
-            
-            report_rows = conn.execute(
+            )
+            user_row = cur.fetchone()
+
+            cur.execute(
                 """SELECT ast, alt, bilirubin, albumin, platelets, inr, pt,
                     afp, hbsag, anti_hcv, apri, fib4, ultrasound_prediction, date_added
-                FROM reports WHERE user_id=? ORDER BY date_added ASC, id ASC""",
+                FROM reports WHERE user_id=%s ORDER BY date_added ASC, id ASC""",
                 (user_id,)
-            ).fetchall()
+            )
+            report_rows = cur.fetchall()
     finally:
         conn.close()
 

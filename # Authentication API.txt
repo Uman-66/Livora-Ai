@@ -6,24 +6,50 @@
 
 POST/signup
 
-### Request Fields
-
- email - string 
- password - string 
- name - string 
- age - integer 
- weight - float 
- height - float 
- diabetes_status - string 
+### Request 
+```json
+{
+  "email": "user@example.com",
+  "password": "password123",
+  "confirm_password": "password123"
+}
 
 ### Response
 
 ```json
 {
-    "user_id": "integer"
+  "success": true,
+  "user_id": 1
 }
 
-## 2. Login
+## 2. Onboarding
+
+### Endpoint
+```json
+{
+  "user_id": 1,
+  "age": 25,
+  "gender": "Male",
+  "weight": 75,
+  "height": 175,
+  "diabetes_status": true,
+  "hypertension": false,
+  "previous_liver_disease": false,
+  "family_history": true,
+  "activity_level": "moderately active",
+  "exercise_frequency": "2-4 times per week",
+  "alcohol_consumption": "occasional",
+  "smoking_status": "never"
+}
+
+### Response
+```json
+{
+  "success": true,
+  "message": "Onboarding completed"
+}
+
+## 3. Login
 
 ### Endpoint
 

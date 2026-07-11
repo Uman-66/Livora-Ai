@@ -6,8 +6,10 @@ POST /insights
 
 ### Request Fields
 
-| Field | Type |
-| user_id | integer |
+```json
+{
+    "user_id": int
+}
 
 ### Response
 
@@ -15,26 +17,34 @@ Success:
 
 ```json
 {
-    "success": true,
-    "analysis": {
-        "overall_health_score": "integer",
-        "flags": {
-            "ast": "string",
-            "alt": "string",
-            "bilirubin": "string",
-            "albumin": "string"
-        },
-        "apri_fib4_interpretation": "string",
-        "ai_insights": [
-            "string"
-        ],
-        "ai_summary": "string"
-    }
+  "success": true,
+  "analysis": {
+    "overall_health_score": 0,
+    "flags": {
+      "ast": {
+        "status": "Normal | High | N/A",
+        "value": 0
+      },
+      "alt": {
+        "status": "Normal | High | N/A",
+        "value": 0
+      },
+      "bilirubin": {
+        "status": "Normal | High | N/A",
+        "value": 0
+      },
+      "albumin": {
+        "status": "Normal | Low | N/A",
+        "value": 0
+      }
+    },
+    "apri_fib4_interpretation": "string",
+    "ai_insights": [
+      "string",
+      "string",
+      "string"
+    ]
+  }
 }
 
-
-### Notes
-
-- Generates the final AI liver health assessment.
-- Uses previously uploaded report data, calculated fibrosis scores, and ultrasound prediction.
-- Returns a structured analysis object ready for display in the dashboard.
+### to be used for home dashboard

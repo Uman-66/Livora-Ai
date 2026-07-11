@@ -6,10 +6,10 @@ POST/Upload
 
 ### Request Fields
 
-| Field | Type | Description |
+| Field     | Type   | Description     |
 
-file | File | Report PDF/Image
-report_type | string | report type|
+file        | File   | Report PDF/Image|
+report_type | string | report type     |
 
 #Supported report type values
 
@@ -51,3 +51,25 @@ Error:
     "error": "string"
 }
 ```
+
+# GET /recent-reports/<user_id>
+
+###Response 
+
+{
+  "success": true,
+  "recent_reports": [
+    {
+      "report_type": "lft",
+      "date_uploaded": "2026-07-11 10:30:45"
+    },
+    {
+      "report_type": "cbc",
+      "date_uploaded": "2026-07-10 18:15:22"
+    },
+    {
+      "report_type": "ultrasound",
+      "date_uploaded": "2026-07-09 14:02:11"
+    }
+  ]
+}

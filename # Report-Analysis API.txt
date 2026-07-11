@@ -1,0 +1,67 @@
+# Report-Analysis API 
+(to be used for data analysis page)
+###Endpoint
+
+POST /report-analysis
+
+# Request
+```json
+{
+    "user_id": int
+}
+
+# Response
+```json
+{
+  "overall_health_score": 0,
+  "risk_level": "Low | Moderate | High | Critical",
+
+  "biomarker_status": {
+    "ast": {
+      "value": 0,
+      "status": "string"
+    },
+    "alt": {
+      "value": 0,
+      "status": "string"
+    },
+    "bilirubin": {
+      "value": 0,
+      "status": "string"
+    },
+    "albumin": {
+      "value": 0,
+      "status": "string"
+    },
+    "platelets": {
+      "value": 0,
+      "status": "string"
+    },
+    "inr": {
+      "value": 0,
+      "status": "string"
+    },
+    "afp": {
+      "value": 0,
+      "status": "string"
+    },
+    "apri": {
+      "value": 0,
+      "status": "string"
+    },
+    "fib4": {
+      "value": 0,
+      "status": "string"
+    }
+  },
+
+  "biomarker_insights": [
+    {
+      "biomarker": "string",
+      "value": 0,
+      "insight": "string"
+    }
+  ],
+
+  "ai_summary": "string"
+}
