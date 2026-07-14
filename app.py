@@ -1,36 +1,28 @@
-from flask import Flask, request, jsonify
-from db import signup, login  # importing your working functions from last night
+from flask import Flask
+from flask_cors import CORS
+
+from routes.auth import auth_bp
+from routes.upload import upload_bp
+from routes.calculate import calculate_bp
+from routes.insights import insights_bp
+from routes.report_analysis import report_analysis_bp
 
 app = Flask(__name__)
 
-@app.route("/signup", methods=["POST"])
-def signup_route():
-    data = request.get_json()  # this reads the JSON body the mobile app sends
-    email = data.get("email")
-    password = data.get("password")
-    name = data.get("name")
-    age = data.get("age")
-    weight = data.get("weight")
-    diabetes_status = data.get("diabetes_status")
+CORS(app)
 
-    user_id = signup(email, password, name, age, weight, diabetes_status)
+app.register_blueprint(auth_bp)
+app.register_blueprint(upload_bp)
+app.register_blueprint(calculate_bp)
+app.register_blueprint(insights_bp)
+app.register_blueprint(report_analysis_bp)
 
-    if user_id is None:
-        return jsonify({"error": "Email already exists"}), 400
-    return jsonify({"user_id": user_id}), 201
-
-
-@app.route("/login", methods=["POST"])
-def login_route():
-    data = request.get_json()
-    email = data.get("email")
-    password = data.get("password")
-
-    user_id = login(email, password)
-
-    if user_id is None:
-        return jsonify({"error": "Invalid credentials"}), 401
-    return jsonify({"user_id": user_id}), 200
+@app.route("/", methods=["GET"])
+def home():
+    return {
+        "success": True,
+        "message": "Livora Backend is running"
+    }, 200
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
